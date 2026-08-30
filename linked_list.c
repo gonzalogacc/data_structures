@@ -4,6 +4,13 @@
 #include "linked_list.h"
 
 
+void fail_if_null(Node* node){
+    if (node == NULL){
+        fprintf(stderr, "The list cannot be NULL\n");
+        exit(1);
+    }
+}
+
 Node* new_node(int value){
     Node* node = malloc(sizeof(Node));
     node->value = value;
@@ -28,10 +35,8 @@ void free_list(Node* list){
 
 size_t len_list(Node* list){
     /* Return the length of the list. */
-    if (list == NULL){
-        fprintf(stderr, "The list cannot be NULL\n");
-        exit(1);
-    }
+    fail_if_null(list);
+
     size_t count = 0;
     while (list != NULL){
         count++;
@@ -42,10 +47,7 @@ size_t len_list(Node* list){
 
 int find_value(Node* list, int value){
     /* Find a value in the list and return the index. */
-    if (list == NULL){
-        fprintf(stderr, "The list cannot be NULL\n");
-        exit(1);
-    }
+    fail_if_null(list);
 
     int i = 0;
     while(list != NULL){
@@ -79,10 +81,7 @@ Node* get_node_at(Node* node, int i){
 Node* append_node(Node *list, int value){
     /* Add a node to the list.*/
     // Alloc a new node
-    if (list == NULL){
-        fprintf(stderr, "The list cannot be NULL\n");
-        exit(1);
-    }
+    fail_if_null(list);
 
     Node* nn = new_node(value);
     
@@ -107,10 +106,8 @@ Node* prepend_node(Node* list, int value){
 
 Node* pop_front(Node* list, int* pop_value){
     /* Pop a node from the beginning of the list. */
-    if (list == NULL){
-        fprintf(stderr, "List can't be NULL");
-        exit(1);
-    }
+    fail_if_null(list);
+
     *pop_value = list->value;
 
     list = list->next;
@@ -119,10 +116,8 @@ Node* pop_front(Node* list, int* pop_value){
 
 Node* pop_back(Node* list, int* pop_value){
     Node* head = list;
-    if (list == NULL){
-        fprintf(stderr, "List can't be NULL");
-        exit(1);
-    }
+    fail_if_null(list);
+
     Node* prev_node = NULL;
     while (list->next != NULL){
         prev_node = list;
@@ -136,10 +131,7 @@ Node* pop_back(Node* list, int* pop_value){
 Node* insert_at(Node* node, int value, int pos){
     /* Insert the value at position of the linked list. */
     Node* head = node;
-    if (node == NULL){
-        fprintf(stderr, "The list cannot be NULL\n");
-        exit(1);
-    }
+    fail_if_null(node);
 
     // Insert at position 0 is a prepend
     if (pos == 0){
