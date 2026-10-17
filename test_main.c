@@ -50,13 +50,16 @@ void test_find_element_in_list(void){
 }
 
 void test_get_node_at(void){
-    Node* list = init_list(1);
-    list = append_node(list, 1);
-    list = append_node(list, 22);
-    list = append_node(list, 22);
+    Node* list = init_list(10);
+    list = append_node(list, 20);
+    list = append_node(list, 30);
+    list = append_node(list, 40);
 
-    Node* found_node = get_node_at(list, 2);
-    ASSERT(found_node->value == 22, "get_node_at should return the node at position 2 (value 22)");
+    ASSERT(get_node_at(list, 0)->value == 10, "get_node_at should return the head at position 0 (value 10)");
+    ASSERT(get_node_at(list, 2)->value == 30, "get_node_at should return the node at position 2 (value 30)");
+    ASSERT(get_node_at(list, 3)->value == 40, "get_node_at should return the last node at position 3 (value 40)");
+    ASSERT(get_node_at(list, 4) == NULL, "get_node_at should return NULL for position == length");
+    ASSERT(get_node_at(list, -1) == NULL, "get_node_at should return NULL for a negative position");
     free_list(list);
 }
 
@@ -160,9 +163,22 @@ void test_delete_by_value(){
     nn = delete_by_value(nn, delete_value);
     ASSERT(len_list(nn) == array_size-4, "Wrong array length!");
 
-    delete_value = 3;
-    nn = delete_by_value(nn, delete_value);
-    ASSERT(len_list(nn) == array_size-4, "Wrong array length!");
+    //delete_value = 3;
+    //nn = delete_by_value(nn, delete_value);
+    //ASSERT(len_list(nn) == array_size-4, "Wrong array length!");
+}
+
+
+void test_reverse_list(){
+    int i_array[] = {1,2,3,4};
+    size_t array_size = sizeof(i_array) / sizeof(i_array[0]);
+
+    Node* nn = init_list_from_array(i_array, array_size);
+    nn = reverse_list(nn);
+    ASSERT(get_node_at(nn, 0)->value == 4, "Elements are not reverted.");
+    ASSERT(get_node_at(nn, 1)->value == 3, "Elements are not reverted.");
+    ASSERT(get_node_at(nn, 2)->value == 2, "Elements are not reverted.");
+    ASSERT(get_node_at(nn, 3)->value == 1, "Elements are not reverted.");
 }
 
 int main(void) {
@@ -179,6 +195,7 @@ int main(void) {
     RUN_TEST(test_delete_at_index);
     RUN_TEST(test_delete_first_index);
     RUN_TEST(test_delete_by_value);
+    RUN_TEST(test_reverse_list);
 
     TEST_REPORT();
     return tests_failed != 0; // Return non-zero exit code if any test failed

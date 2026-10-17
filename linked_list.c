@@ -1,4 +1,5 @@
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "linked_list.h"
@@ -70,23 +71,21 @@ int find_value(Node* list, int value){
 }
 
 Node* get_node_at(Node* node, int i){
-    /* Return the node at position i.*/
-    if (i>len_list(node)){
-        fprintf(stderr, "List doesn't have position i=%d\n", i);
-        exit(1);
+    /* Return the node at position i, or NULL if i is out of range.*/
+    if (i < 0){
+        return NULL;
     }
     int count = 0;
     while (node != NULL){
-        printf("Value: %d: %d\n", node->value, count);
+        //printf("Value: %d: %d\n", node->value, count);
         if (count == i){
-            printf("Value found: %d: %d\n", node->value, count);
+            //printf("Value found: %d: %d\n", node->value, count);
             return node;
         }
         node = node->next;
         count++;
     }
-    fprintf(stderr, "Node not found");
-    exit(1);
+    return NULL;
 }
 
 Node* append_node(Node *list, int value){
@@ -218,9 +217,19 @@ Node* delete_by_value(Node* head, int value) {
     return head;
 }
 
-// delete_at_index
-// delete_by_value
-// reverse_list
+Node* reverse_list(Node* head){
+    // reverse the order of the list.
+    fail_if_null(head);
+
+    Node* node = head;
+    Node* reversed = init_list(get_node_at(node, 0)->value);
+    while (node != NULL){
+        reversed = prepend_node(reversed, node->value);
+        node = node->next;
+    }
+    return reversed;
+}
+
 // find_middle
 // detect_cycle
 // merge_sorted_lists

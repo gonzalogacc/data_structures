@@ -24,5 +24,6 @@ Node* pop_back(Node* list, int* pop_node);
 Node* init_list_from_array(int initial_list[], int array_size);
 Node* delete_at_index(Node* list, int array_index);
 Node* delete_by_value(Node* list, int value);
+Node* reverse_list(Node* list);
 
 #endif
