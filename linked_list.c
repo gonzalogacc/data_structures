@@ -24,6 +24,15 @@ Node* init_list(int value){
     return node;
 }
 
+Node* init_list_from_array(int initial_array[], int array_size){
+    // Init a linked list from an array of ints
+    Node* nn = new_node(initial_array[0]);
+    for (int i=1; i<array_size; i++){
+        append_node(nn, initial_array[i]);
+    }
+    return nn;
+}
+
 void free_list(Node* list){
     /* Clear the linked list.*/
     while (list != NULL){
@@ -76,6 +85,8 @@ Node* get_node_at(Node* node, int i){
         node = node->next;
         count++;
     }
+    fprintf(stderr, "Node not found");
+    exit(1);
 }
 
 Node* append_node(Node *list, int value){
@@ -153,9 +164,71 @@ Node* insert_at(Node* node, int value, int pos){
     return head;
 }
 
+
+Node* delete_at_index(Node* head, int index){
+    // Delete list at index position
+    fail_if_null(head);
+    Node* node = head;
+
+    size_t list_size = len_list(head);
+    if ((size_t) index >= list_size){
+        fprintf(stderr, "List index out of range");
+        exit(1);
+    }
+    
+    if (index == 0) {
+        return node->next;
+    }
+
+    Node* previous = head;
+    int count = 0;
+    while (node != NULL){
+        if (count == index){
+            // remove at this position
+            previous->next = node->next;
+            return head;
+        }
+        count++;
+        previous = node;
+        node = node->next;
+    }
+    fprintf(stderr, "List index out of range");
+    exit(1);
+}
+
+Node* delete_by_value(Node* head, int value) {
+    // remove first element with value=value from the list
+    fail_if_null(head);
+
+    Node* node = head;
+    Node* previous = head;
+
+    if (node->value == value){
+        return node->next;
+    }
+
+    while (node != NULL){
+        if (node->value == value){
+            previous->next = node->next;
+            return head;
+        }
+        previous = node;
+        node = node->next;
+    }
+    return head;
+}
+
+// delete_at_index
+// delete_by_value
+// reverse_list
+// find_middle
+// detect_cycle
+// merge_sorted_lists
+// remove_duplicates
+
+
 void print_list(Node* list){
     /* Print the list */
-    printf("%d\n", list->value);
     while (list != NULL){
         printf("%d\n", list->value);
         list = list->next;

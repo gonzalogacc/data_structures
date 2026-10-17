@@ -1,5 +1,6 @@
 #include "minitests.h"
 #include "linked_list.h" // Your code under test
+#include <stddef.h>
 #include <stdio.h>
 
 int tests_run = 0;
@@ -80,9 +81,10 @@ void test_pop_front(void){
     Node* list = init_list(1);
     list = append_node(list, 2);
 
-    int* returned;
-    list = pop_front(list, returned);
-    ASSERT(*returned == 1, "Returned wrong value X");
+    int returned;
+    list = pop_front(list, &returned);
+
+    ASSERT(returned == 1, "Returned wrong value X");
     ASSERT(list->value == 2, "Returned wrong value1");
 }
 
@@ -90,10 +92,77 @@ void test_pop_back(void){
     Node* list = init_list(1);
     list = append_node(list, 2);
 
-    int* returned;
-    list = pop_back(list, returned);
-    ASSERT(*returned == 2, "Returned wrong value X");
+    int returned;
+    list = pop_back(list, &returned);
+    ASSERT(returned == 2, "Returned wrong value X");
     ASSERT(list->value == 1, "Returned wrong value1");
+}
+
+
+void test_init_list_from_array(void){
+    int i_array[] = {1,2,3,4};
+    int array_size = sizeof(i_array) / sizeof(i_array[0]);
+
+    Node* nn = init_list_from_array(i_array, array_size);
+
+    ASSERT(get_node_at(nn, 3)->value == 4, "Wrong last number");
+}
+
+
+void test_delete_at_index(){
+    int i_array[] = {1,2,3,4};
+    int array_size = sizeof(i_array) / sizeof(i_array[0]);
+
+    int delete_index = 2;
+    Node* nn = init_list_from_array(i_array, array_size);
+    nn = delete_at_index(nn, delete_index);
+
+    ASSERT(len_list(nn) == 3, "Wrong len for list");
+    ASSERT(get_node_at(nn, delete_index)->value == 4, "Wrong index at the deleted part");
+    ASSERT(find_value(nn, 3) == -1, "Item found but it shouldnt be there");
+
+    delete_index = 2;
+    nn = delete_at_index(nn, delete_index);
+    ASSERT(len_list(nn) == 2, "Wrong len for list");
+
+}
+
+void test_delete_first_index(){
+    int i_array[] = {1,2,3,4};
+    size_t array_size = sizeof(i_array) / sizeof(i_array[0]);
+
+    // delete first index
+    int delete_index = 0;
+    Node* nn = init_list_from_array(i_array, array_size);
+    nn = delete_at_index(nn, delete_index);
+    ASSERT(get_node_at(nn, 0)->value == 2, "Wrong number at the head of the list");
+}
+
+
+void test_delete_by_value(){
+    int i_array[] = {1,2,3,1,4};
+    size_t array_size = sizeof(i_array) / sizeof(i_array[0]);
+
+    int delete_value = 1;
+    Node* nn = init_list_from_array(i_array, array_size);
+    nn = delete_by_value(nn, delete_value);
+    ASSERT(len_list(nn) == array_size-1, "Wrong array length!");
+    
+    delete_value = 1;
+    nn = delete_by_value(nn, delete_value);
+    ASSERT(len_list(nn) == array_size-2, "Wrong array length!");
+
+    delete_value = 2;
+    nn = delete_by_value(nn, delete_value);
+    ASSERT(len_list(nn) == array_size-3, "Wrong array length!");
+
+    delete_value = 4;
+    nn = delete_by_value(nn, delete_value);
+    ASSERT(len_list(nn) == array_size-4, "Wrong array length!");
+
+    delete_value = 3;
+    nn = delete_by_value(nn, delete_value);
+    ASSERT(len_list(nn) == array_size-4, "Wrong array length!");
 }
 
 int main(void) {
@@ -106,6 +175,10 @@ int main(void) {
     RUN_TEST(test_insert_node_at);
     RUN_TEST(test_pop_front);
     RUN_TEST(test_pop_back);
+    RUN_TEST(test_init_list_from_array);
+    RUN_TEST(test_delete_at_index);
+    RUN_TEST(test_delete_first_index);
+    RUN_TEST(test_delete_by_value);
 
     TEST_REPORT();
     return tests_failed != 0; // Return non-zero exit code if any test failed
