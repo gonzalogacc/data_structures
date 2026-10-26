@@ -337,7 +337,7 @@ Node* merge_sorted_lists(Node* list_1, Node* list_2){
             list_2 = list_2->next;
         }
     }
-    // Put the rest
+
     while (list_1 != NULL){
         head->next = list_1;
         head = head->next;
@@ -351,7 +351,6 @@ Node* merge_sorted_lists(Node* list_1, Node* list_2){
     return result;
 }
 
-// merge_sorted_lists
 // remove_duplicates
 
 
