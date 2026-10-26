@@ -25,5 +25,10 @@ Node* init_list_from_array(int initial_list[], int array_size);
 Node* delete_at_index(Node* list, int array_index);
 Node* delete_by_value(Node* list, int value);
 Node* reverse_list(Node* list);
+Node* swap_nodes(Node* list, int src_i, int dst_i);
+Node* find_middle(Node* list);
+Node* find_node(Node* list, Node* node);
+Node* detect_cycle(Node* list);
+Node* merge_sorted_lists(Node* list_1, Node* list_2);
 
 #endif

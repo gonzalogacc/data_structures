@@ -179,6 +179,198 @@ void test_reverse_list(){
     ASSERT(get_node_at(nn, 1)->value == 3, "Elements are not reverted.");
     ASSERT(get_node_at(nn, 2)->value == 2, "Elements are not reverted.");
     ASSERT(get_node_at(nn, 3)->value == 1, "Elements are not reverted.");
+    ASSERT(len_list(nn) == 4, "The list has the wrong list of elements");
+}
+
+void test_swap_nodes_in_place(){
+    int i_array[] = {1,2,3,4};
+    size_t array_size = sizeof(i_array) / sizeof(i_array[0]);
+
+    Node* nn = init_list_from_array(i_array, array_size);
+
+    nn = swap_nodes(nn, 1, 2);
+    ASSERT(get_node_at(nn, 1)->value == 3, "Node not swapped");
+    ASSERT(get_node_at(nn, 2)->value == 2, "Node not swapped");
+
+    ASSERT(swap_nodes(nn, 99998, 9999) == NULL, "Out of bounds should have been NULL");
+    ASSERT(swap_nodes(nn, 1, 9999) == NULL, "Out of bounds should have been NULL");
+}
+
+
+void test_find_middle(){
+    int i_array[] = {1,2,3,4,5};
+    size_t array_size = sizeof(i_array) / sizeof(i_array[0]);
+    Node* nn = init_list_from_array(i_array, array_size);
+    ASSERT(find_middle(nn)->value == 3, "the middle should be 3 but it's not");
+
+    int i_array_2[] = {1,2,3,4,5,6};
+    size_t array_size_2 = sizeof(i_array_2) / sizeof(i_array_2[0]);
+    nn = init_list_from_array(i_array_2, array_size_2);
+    ASSERT(find_middle(nn)->value == 3, "the middle should be 3 but it's not");
+
+    int i_array_3[] = {1,2,3};
+    size_t array_size_3 = sizeof(i_array_3) / sizeof(i_array_3[0]);
+    nn = init_list_from_array(i_array_3, array_size_3);
+    ASSERT(find_middle(nn)->value == 2, "the middle should be 3 but it's not");
+
+    int i_array_4[] = {1,2,3};
+    size_t array_size_4 = sizeof(i_array_4) / sizeof(i_array_4[0]);
+    nn = init_list_from_array(i_array_4, array_size_4);
+    ASSERT(find_middle(nn)->value == 2, "the middle should be 3 but it's not");
+
+}
+
+
+void test_find_node(){
+    //Find a node in a list
+    int i_array[] = {1,2,3,4};
+    size_t array_size = sizeof(i_array) / sizeof(i_array[0]);
+    Node* nn = init_list_from_array(i_array, array_size);
+
+    // Find the second node
+    Node* node_found = find_node(nn, nn->next);
+    ASSERT(node_found != NULL, "node_found is NULL");
+    ASSERT(nn->next == node_found, "Node address is not the same");
+
+}
+
+void test_detect_cycle(){
+    // create a linked list that is a circle
+    int i_array[] = {1,2,3,4,5};
+    size_t array_size = sizeof(i_array) / sizeof(i_array[0]);
+    Node* nn = init_list_from_array(i_array, array_size);
+    Node* head = get_node_at(nn, 0);
+    Node* tail = get_node_at(nn, 4);
+    tail->next = head; 
+
+    Node* result = detect_cycle(nn);
+    ASSERT(result != NULL, "Cycle was not detected");
+    ASSERT(head->next == get_node_at(nn, 1), "detect_cycle should not modify the list");
+
+}
+
+void test_detect_cycle_no_cycle(){
+    // a normal list has no cycle and must stay intact
+    int i_array[] = {1,2,3,4,5};
+    size_t array_size = sizeof(i_array) / sizeof(i_array[0]);
+    Node* nn = init_list_from_array(i_array, array_size);
+
+    Node* result = detect_cycle(nn);
+    ASSERT(result == NULL, "A list without a cycle should return NULL");
+    ASSERT(len_list(nn) == array_size, "detect_cycle should not modify the list");
+    free_list(nn);
+}
+
+void test_detect_cycle_self_loop(){
+    // a single node pointing to itself is a cycle
+    Node* nn = init_list(1);
+    nn->next = nn;
+
+    ASSERT(detect_cycle(nn) != NULL, "A node pointing to itself is a cycle");
+    nn->next = NULL;
+    free_list(nn);
+}
+
+void test_detect_cycle_two_nodes(){
+    // two nodes without a cycle
+    Node* nn = init_list(1);
+    nn = append_node(nn, 2);
+
+    ASSERT(detect_cycle(nn) == NULL, "Two nodes without a cycle should return NULL");
+    free_list(nn);
+}
+
+void test_detect_cycle_single_node(){
+    // a single node without a cycle
+    Node* nn = init_list(1);
+
+    ASSERT(detect_cycle(nn) == NULL, "A single node without a cycle should return NULL");
+    free_list(nn);
+}
+
+int list_matches(Node* list, int expected[], size_t expected_size){
+    // 1 if the list holds exactly the values in expected, in order
+    for (size_t i = 0; i < expected_size; i++){
+        if (list == NULL || list->value != expected[i]){
+            return 0;
+        }
+        list = list->next;
+    }
+    return list == NULL;
+}
+
+void test_merge_sorted_lists_interleaved(){
+    int a[] = {1,3,5};
+    int b[] = {2,4,6};
+    int expected[] = {1,2,3,4,5,6};
+    Node* l1 = init_list_from_array(a, 3);
+    Node* l2 = init_list_from_array(b, 3);
+
+    Node* merged = merge_sorted_lists(l1, l2);
+    ASSERT(list_matches(merged, expected, 6), "Interleaved lists should merge to 1..6");
+    free_list(merged);
+}
+
+void test_merge_sorted_lists_one_after_other(){
+    // every value in the first list is smaller than the second
+    int a[] = {1,2,3};
+    int b[] = {4,5,6};
+    int expected[] = {1,2,3,4,5,6};
+    Node* l1 = init_list_from_array(a, 3);
+    Node* l2 = init_list_from_array(b, 3);
+
+    Node* merged = merge_sorted_lists(l1, l2);
+    ASSERT(list_matches(merged, expected, 6), "Second list should be appended after the first");
+    free_list(merged);
+}
+
+void test_merge_sorted_lists_second_starts_smaller(){
+    // the head of the result comes from the second list
+    int a[] = {4,5,6};
+    int b[] = {1,2,3};
+    int expected[] = {1,2,3,4,5,6};
+    Node* l1 = init_list_from_array(a, 3);
+    Node* l2 = init_list_from_array(b, 3);
+
+    Node* merged = merge_sorted_lists(l1, l2);
+    ASSERT(list_matches(merged, expected, 6), "Head should come from the second list");
+    free_list(merged);
+}
+
+void test_merge_sorted_lists_different_lengths(){
+    // the longer list has several nodes left over at the end
+    int a[] = {1,10};
+    int b[] = {2,3,4,5};
+    int expected[] = {1,2,3,4,5,10};
+    Node* l1 = init_list_from_array(a, 2);
+    Node* l2 = init_list_from_array(b, 4);
+
+    Node* merged = merge_sorted_lists(l1, l2);
+    ASSERT(list_matches(merged, expected, 6), "All leftover nodes should be kept");
+    free_list(merged);
+}
+
+void test_merge_sorted_lists_duplicates(){
+    // equal values from both lists are all kept
+    int a[] = {1,2,2};
+    int b[] = {2,3};
+    int expected[] = {1,2,2,2,3};
+    Node* l1 = init_list_from_array(a, 3);
+    Node* l2 = init_list_from_array(b, 2);
+
+    Node* merged = merge_sorted_lists(l1, l2);
+    ASSERT(list_matches(merged, expected, 5), "Duplicate values should all be kept");
+    free_list(merged);
+}
+
+void test_merge_sorted_lists_single_nodes(){
+    int expected[] = {1,5};
+    Node* l1 = init_list(5);
+    Node* l2 = init_list(1);
+
+    Node* merged = merge_sorted_lists(l1, l2);
+    ASSERT(list_matches(merged, expected, 2), "Two single nodes should merge to 1, 5");
+    free_list(merged);
 }
 
 int main(void) {
@@ -196,6 +388,20 @@ int main(void) {
     RUN_TEST(test_delete_first_index);
     RUN_TEST(test_delete_by_value);
     RUN_TEST(test_reverse_list);
+    RUN_TEST(test_swap_nodes_in_place);
+    RUN_TEST(test_find_middle);
+    RUN_TEST(test_find_node);
+    RUN_TEST(test_detect_cycle);
+    RUN_TEST(test_detect_cycle_no_cycle);
+    RUN_TEST(test_detect_cycle_self_loop);
+    RUN_TEST(test_detect_cycle_two_nodes);
+    RUN_TEST(test_detect_cycle_single_node);
+    RUN_TEST(test_merge_sorted_lists_interleaved);
+    RUN_TEST(test_merge_sorted_lists_one_after_other);
+    RUN_TEST(test_merge_sorted_lists_second_starts_smaller);
+    RUN_TEST(test_merge_sorted_lists_different_lengths);
+    RUN_TEST(test_merge_sorted_lists_duplicates);
+    RUN_TEST(test_merge_sorted_lists_single_nodes);
 
     TEST_REPORT();
     return tests_failed != 0; // Return non-zero exit code if any test failed

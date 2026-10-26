@@ -222,7 +222,7 @@ Node* reverse_list(Node* head){
     fail_if_null(head);
 
     Node* node = head;
-    Node* reversed = init_list(get_node_at(node, 0)->value);
+    Node* reversed = NULL;
     while (node != NULL){
         reversed = prepend_node(reversed, node->value);
         node = node->next;
@@ -230,8 +230,127 @@ Node* reverse_list(Node* head){
     return reversed;
 }
 
-// find_middle
-// detect_cycle
+
+Node* swap_nodes(Node* head, int src_i, int dst_i){
+    // swap 2 nodes in the list in place
+    fail_if_null(head);
+    size_t list_size = len_list(head);
+    if ((size_t) src_i >= list_size || (size_t) dst_i>=list_size){
+        fprintf(stderr, "Values are out of index for the list src_i: %i dest_i: %i len: %li\n", src_i, dst_i, list_size);
+        return NULL;
+    }
+
+    Node* dst_node = get_node_at(head, dst_i);
+    Node* src_node = get_node_at(head, src_i);
+
+    int temp_value = dst_node->value;
+    dst_node->value = src_node->value;
+    src_node->value = temp_value;
+
+    return head;
+}
+
+
+Node* find_middle(Node* head){
+    // Given the head of alist returns the node that is in the middle.
+    // Find the middle using 2 pointer.
+    fail_if_null(head);
+    Node* fast = head;
+    Node* slow = head;
+    while (fast->next != NULL && fast->next->next != NULL){
+        fast = fast->next->next;
+        slow = slow->next;
+    }
+    return slow;
+}
+
+
+
+Node* find_node(Node* list, Node* node){
+    // find the node in the linked list by address, if node not in list return NULL
+    while (list != NULL){
+        if (list == node){
+            return node;
+        }
+        list = list-> next;
+    }
+    return NULL;
+}
+
+Node* _append_node_obj(Node* list, Node* node){
+    //Append an entire node to a list
+    Node* to_insert = node;
+    to_insert->next = NULL;
+    if (list == NULL) {
+        return to_insert;
+    }
+    while (list->next != NULL){
+        list = list->next;
+    }
+    list->next = node;
+    return list;
+}
+
+Node* detect_cycle(Node* head){
+    // Detect if the list contains a cycle.
+    fail_if_null(head);
+    
+    Node* slow = head;
+    if (head->next == NULL || head->next->next == NULL){
+        return NULL;
+    }
+    Node* fast = head->next->next;
+
+    while (slow != fast && fast != NULL){
+        slow = slow->next;
+        if (fast->next == NULL || fast->next->next == NULL){
+            return NULL;
+        }
+        fast = fast->next->next;
+    }
+    return slow;
+}
+
+
+Node* merge_sorted_lists(Node* list_1, Node* list_2){
+    fail_if_null(list_1);
+    fail_if_null(list_2);
+    
+    Node* head;
+    if (list_1->value <= list_2->value){
+        head = list_1;
+        list_1= list_1->next;
+    } else {
+        head = list_2;
+        list_2= list_2->next;
+    }
+    Node* result = head; 
+    
+    while (list_1 != NULL && list_2 != NULL){
+        if (list_1->value <= list_2->value){
+            head->next = list_1;
+            head = head->next;
+            list_1 = list_1->next;
+        } else {
+            head ->next = list_2;
+            head = head->next;
+            list_2 = list_2->next;
+        }
+    }
+    // Put the rest
+    while (list_1 != NULL){
+        head->next = list_1;
+        head = head->next;
+        list_1 = list_1->next;
+    }
+    while (list_2 != NULL){
+        head->next = list_2;
+        head = head->next;
+        list_2 = list_2->next;
+    }
+    return result;
+}
+
 // merge_sorted_lists
 // remove_duplicates
 
